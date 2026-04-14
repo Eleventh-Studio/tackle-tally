@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { ScrollView, View, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCatches } from '@/hooks/useCatches';
 import { useStats } from '@/hooks/useStats';
 import { SectionHeader } from '@/components/ds';
@@ -12,17 +13,20 @@ export function ChartsScreen() {
 
   if (catches.length === 0) {
     return (
-      <View className="flex-1 bg-background items-center justify-center gap-y-3">
-        <Text className="text-5xl">📊</Text>
-        <Text className="text-foreground font-bold text-lg">No data yet</Text>
-        <Text className="text-muted text-sm">Log some catches to see your stats</Text>
-      </View>
+      <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#121212' }}>
+        <View className="flex-1 items-center justify-center gap-y-3">
+          <Text className="text-5xl">📊</Text>
+          <Text className="text-foreground font-bold text-lg">No data yet</Text>
+          <Text className="text-muted text-sm">Log some catches to see your stats</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   const maxCount = Math.max(...stats.speciesBreakdown.map((s) => s.count), 1);
 
   return (
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#121212' }}>
     <ScrollView
       className="flex-1 bg-background"
       contentContainerClassName="px-4 pt-4 pb-8 gap-y-8"
@@ -68,6 +72,7 @@ export function ChartsScreen() {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 

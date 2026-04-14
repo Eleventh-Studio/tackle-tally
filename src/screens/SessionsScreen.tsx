@@ -29,7 +29,7 @@ export function SessionsScreen() {
     catches.filter((c) => c.session_id === sessionId).length;
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <ScrollView
         className="flex-1 bg-background"
         contentContainerClassName="px-4 pt-4 pb-8 gap-y-4"
@@ -74,6 +74,6 @@ export function SessionsScreen() {
         onClose={() => setShowNew(false)}
         onCreate={createSession}
       />
-    </>
+    </View>
   );
 }

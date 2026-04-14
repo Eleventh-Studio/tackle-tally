@@ -8,7 +8,7 @@ export const catches = sqliteTable('catches', {
   photo_uri: text('photo_uri').notNull(),
 
   // Fish
-  species: text('species').notNull(),
+  species: text('species'), // nullable — user can fill in later or via AI identification
   length_cm: real('length_cm'),
   weight_g: real('weight_g'),
 

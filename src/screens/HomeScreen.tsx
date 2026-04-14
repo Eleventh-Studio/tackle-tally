@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, Pressable, RefreshControl } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Zap } from 'lucide-react-native';
 import { StatCard, SectionHeader } from '@/components/ds';
@@ -14,13 +13,11 @@ import { colors } from '@/theme';
 
 export function HomeScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { catches, loadCatches } = useCatches();
   const { activeSession, createSession, endSession, loadSessions } = useSessions();
   const stats = useStats();
   const [refreshing, setRefreshing] = useState(false);
   const [showNewSession, setShowNewSession] = useState(false);
-
   useEffect(() => {
     loadCatches();
     loadSessions();
@@ -42,7 +39,7 @@ export function HomeScreen() {
     <>
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerStyle={{ paddingTop: insets.top + 16, paddingBottom: 32, paddingHorizontal: 16, gap: 24 }}
+        contentContainerStyle={{ paddingTop: 16, paddingBottom: 32, paddingHorizontal: 16, gap: 24 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
         }
@@ -72,10 +69,11 @@ export function HomeScreen() {
         {/* Primary CTA */}
         <Pressable
           onPress={() => router.push('/log-catch')}
-          className="bg-accent rounded-card py-5 items-center justify-center active:bg-accent-pressed flex-row gap-x-3"
+          className="bg-accent rounded-card items-center justify-center active:bg-accent-pressed flex-row gap-x-4"
+          style={{ paddingVertical: 28 }}
         >
-          <Zap size={22} color={colors.accentForeground} strokeWidth={2.5} />
-          <Text className="text-accent-fg font-black text-xl uppercase tracking-widest">
+          <Zap size={30} color={colors.accentForeground} strokeWidth={2.5} />
+          <Text className="text-accent-fg font-black text-3xl uppercase tracking-widest">
             Log a Catch
           </Text>
         </Pressable>
@@ -96,7 +94,11 @@ export function HomeScreen() {
             <SectionHeader title="Recent Catches" />
             <View className="gap-y-3">
               {recentCatches.map((c) => (
-                <CatchCard key={c.id} catch_={c} />
+                <CatchCard
+                  key={c.id}
+                  catch_={c}
+                  onPress={() => router.push(`/catches/${c.id}`)}
+                />
               ))}
             </View>
           </View>

@@ -3,7 +3,7 @@ import { openDatabaseSync } from 'expo-sqlite';
 import * as schema from './schema';
 
 // Singleton — opened once, reused across the app
-const expoDB = openDatabaseSync('tackle-tally.db');
+export const expoDB = openDatabaseSync('tackle-tally.db');
 
 export const db = drizzle(expoDB, { schema });
 

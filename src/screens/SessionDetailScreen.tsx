@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, Pressable, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenHeader, StatCard, SectionHeader, Button } from '@/components/ds';
 import { CatchCard } from '@/components/catch/CatchCard';
@@ -34,6 +35,7 @@ export function SessionDetailScreen() {
   };
 
   return (
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#121212' }}>
     <View className="flex-1 bg-background">
       <ScreenHeader
         title={session.name}
@@ -95,5 +97,6 @@ export function SessionDetailScreen() {
         />
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }

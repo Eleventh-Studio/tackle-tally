@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, Image, Pressable, Dimensions, RefreshControl } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCatches } from '@/hooks/useCatches';
 import { formatMonthYear } from '@/utils/formatters';
 import { colors } from '@/theme';
@@ -32,15 +33,18 @@ export function GalleryScreen() {
 
   if (catches.length === 0) {
     return (
-      <View className="flex-1 bg-background items-center justify-center gap-y-3">
-        <Text className="text-5xl">📷</Text>
-        <Text className="text-foreground font-bold text-lg">No photos yet</Text>
-        <Text className="text-muted text-sm">Log a catch to build your gallery</Text>
-      </View>
+      <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#121212' }}>
+        <View className="flex-1 items-center justify-center gap-y-3">
+          <Text className="text-5xl">📷</Text>
+          <Text className="text-foreground font-bold text-lg">No photos yet</Text>
+          <Text className="text-muted text-sm">Log a catch to build your gallery</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: '#121212' }}>
     <ScrollView
       className="flex-1 bg-background"
       refreshControl={
@@ -73,5 +77,6 @@ export function GalleryScreen() {
       ))}
       <View className="h-8" />
     </ScrollView>
+    </SafeAreaView>
   );
 }

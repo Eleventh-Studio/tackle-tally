@@ -32,7 +32,7 @@ export function ProfileScreen() {
               Biggest Catch
             </Text>
             <Text className="text-foreground font-black text-xl">
-              {stats.biggestCatch.species}
+              {stats.biggestCatch.species ?? 'Unknown species'}
             </Text>
             {stats.biggestCatch.length_cm && (
               <Text className="text-muted">{stats.biggestCatch.length_cm} cm</Text>
@@ -41,7 +41,7 @@ export function ProfileScreen() {
         </View>
       )}
 
-      {/* Stats */}
+      {/* Stats summary */}
       <View>
         <SectionHeader title="My Stats" />
         <View className="flex-row flex-wrap gap-3">
@@ -59,23 +59,25 @@ export function ProfileScreen() {
         </View>
       </View>
 
-      {/* Species breakdown */}
+      {/* Species chart */}
       {stats.speciesBreakdown.length > 0 && (
         <View>
-          <SectionHeader title="Species Breakdown" />
+          <SectionHeader title="Top Species" />
           <View className="gap-y-3">
-            {stats.speciesBreakdown.map(({ species, count }) => (
-              <View key={species} className="flex-row items-center gap-x-3">
-                <Text className="text-foreground text-sm flex-1" numberOfLines={1}>
-                  {species}
-                </Text>
-                <View className="flex-1 h-2 bg-surface-raised rounded-full overflow-hidden">
+            {stats.speciesBreakdown.slice(0, 10).map(({ species, count }) => (
+              <View key={species} className="gap-y-1">
+                <View className="flex-row justify-between">
+                  <Text className="text-foreground text-sm font-semibold" numberOfLines={1}>
+                    {species}
+                  </Text>
+                  <Text className="text-muted text-sm">{count}</Text>
+                </View>
+                <View className="h-2 bg-surface-raised rounded-full overflow-hidden">
                   <View
                     className="h-full bg-accent rounded-full"
                     style={{ width: `${(count / maxCount) * 100}%` }}
                   />
                 </View>
-                <Text className="text-muted text-sm w-6 text-right">{count}</Text>
               </View>
             ))}
           </View>
