@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ScrollView,
   View,
@@ -16,8 +16,8 @@ import { ScreenHeader, NumberInput, SectionHeader } from '@/components/ds';
 import { SpeciesSelect } from '@/components/catch/SpeciesSelect';
 import { GearSection, type GearValues } from '@/components/catch/GearSection';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Location from 'expo-location';
 import { useCamera } from '@/hooks/useCamera';
-import { useLocation } from '@/hooks/sensors/useLocation';
 import { useBarometer } from '@/hooks/sensors/useBarometer';
 import { useCatches } from '@/hooks/useCatches';
 import { useSessions } from '@/hooks/useSessions';
@@ -29,7 +29,6 @@ export function LogCatchScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { launchCamera, launchLibrary } = useCamera();
-  const { latitude, longitude } = useLocation();
   const { pressureHpa } = useBarometer();
   const { createCatch } = useCatches();
   const { activeSession } = useSessions();
@@ -38,6 +37,14 @@ export function LogCatchScreen() {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [exifLat, setExifLat] = useState<number | null>(null);
   const [exifLng, setExifLng] = useState<number | null>(null);
+  const [deviceLat, setDeviceLat] = useState<number | null>(null);
+  const [deviceLng, setDeviceLng] = useState<number | null>(null);
+
+  // Request location permission as soon as the screen opens, before the user
+  // taps anything, so the GPS fix is ready by the time they take the photo.
+  useEffect(() => {
+    Location.requestForegroundPermissionsAsync().catch(() => {});
+  }, []);
   const [species, setSpecies] = useState<string | null>(null);
   const [length, setLength] = useState('');
   const [weight, setWeight] = useState('');
@@ -57,13 +64,31 @@ export function LogCatchScreen() {
     setPhase('confirm');
   };
 
+  // Capture a GPS snapshot right now. Runs in parallel with the camera/library
+  // picker so the fix is ready by the time the user confirms the photo.
+  const captureLocation = async () => {
+    try {
+      const { status } = await Location.getForegroundPermissionsAsync();
+      if (status !== 'granted') return;
+      const loc = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+      setDeviceLat(loc.coords.latitude);
+      setDeviceLng(loc.coords.longitude);
+    } catch {
+      // GPS unavailable — save without coordinates
+    }
+  };
+
   const handleCamera = async () => {
-    const result = await launchCamera();
+    // Fire GPS capture and camera simultaneously — camera takes a few seconds
+    // while the user frames the shot, giving GPS time to resolve.
+    const [result] = await Promise.all([launchCamera(), captureLocation()]);
     if (result) afterPhoto(result.uri, result.exifLat, result.exifLng);
   };
 
   const handleLibrary = async () => {
-    const result = await launchLibrary();
+    const [result] = await Promise.all([launchLibrary(), captureLocation()]);
     if (result) afterPhoto(result.uri, result.exifLat, result.exifLng);
   };
 
@@ -84,8 +109,8 @@ export function LogCatchScreen() {
         species: species ?? null,
         length_cm: length ? parseFloat(length) : null,
         weight_g: weight ? parseFloat(weight) * 1000 : null,
-        device_lat: latitude,
-        device_lng: longitude,
+        device_lat: deviceLat,
+        device_lng: deviceLng,
         exif_lat: exifLat,
         exif_lng: exifLng,
         location_name: null,
@@ -168,7 +193,7 @@ export function LogCatchScreen() {
 
         {/* Auto-captured sensor badges */}
         <View className="flex-row gap-x-2 px-4 pt-3 pb-1 flex-wrap">
-          {(latitude != null || longitude != null) && (
+          {(deviceLat != null || exifLat != null) && (
             <View className="bg-surface border border-border rounded-full px-3 py-1">
               <Text className="text-xs text-foreground font-semibold">GPS ✓</Text>
             </View>
