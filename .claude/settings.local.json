@@ -1,9 +1,9 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(npm --version)",
-      "Bash(npx --version)",
-      "Bash(xcode-select -p)"
-    ]
+    "allow": ["Bash(*)", "WebSearch(*)", "WebFetch(*)"],
+    "defaultMode": "bypassPermissions"
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   }
 }

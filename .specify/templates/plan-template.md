@@ -17,15 +17,15 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: TypeScript / React Native (Expo managed workflow)
+**Primary Dependencies**: Expo SDK, Expo Router, expo-sqlite or WatermelonDB, Expo EAS Build + EAS Update
+**Storage**: SQLite (local, offline-first) — cloud sync deferred to Stage 2
+**Testing**: Jest + React Native Testing Library; manual device testing via EAS preview builds
+**Target Platform**: iOS 16+ and Android 13+ (phone, portrait orientation)
+**Project Type**: Mobile app (cross-platform React Native)
+**Performance Goals**: Core catch-log flow ≤ 3 taps / ≤ 3 seconds; app cold-start < 2s
+**Constraints**: Fully offline-capable; one-handed thumb-zone UI (≥ 48dp targets); high-contrast sunlight mode
+**Scale/Scope**: Stage 1 alpha — 1–10 users, local device only; Stage 2 — 20–50 users with cloud sync
 
 ## Constitution Check
 

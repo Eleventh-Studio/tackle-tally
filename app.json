@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "Tackle Tally",
+    "slug": "tackle-tally",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "scheme": "tackle-tally",
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      [
+        "expo-camera",
+        { "cameraPermission": "Allow Tackle Tally to access your camera to photograph your catches." }
+      ],
+      [
+        "expo-location",
+        { "locationWhenInUsePermission": "Allow Tackle Tally to record the location of your catch." }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Tackle Tally to access your photo library.",
+          "savePhotosPermission": "Allow Tackle Tally to save catch photos to your library."
+        }
+      ]
+    ]
+  }
+}
