@@ -9,7 +9,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Camera, ImageIcon, Sparkles } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader, NumberInput, SectionHeader } from '@/components/ds';
@@ -27,6 +27,7 @@ type Phase = 'source' | 'confirm';
 
 export function LogCatchScreen() {
   const router = useRouter();
+  const { mode } = useLocalSearchParams<{ mode?: string }>();
   const insets = useSafeAreaInsets();
   const { launchCamera, launchLibrary } = useCamera();
   const { pressureHpa } = useBarometer();
@@ -44,6 +45,11 @@ export function LogCatchScreen() {
   // taps anything, so the GPS fix is ready by the time they take the photo.
   useEffect(() => {
     Location.requestForegroundPermissionsAsync().catch(() => {});
+  }, []);
+
+  // Direct camera mode: skip the source picker and open camera immediately.
+  useEffect(() => {
+    if (mode === 'camera') handleCamera();
   }, []);
   const [species, setSpecies] = useState<string | null>(null);
   const [length, setLength] = useState('');

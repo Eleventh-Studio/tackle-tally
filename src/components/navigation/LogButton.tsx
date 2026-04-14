@@ -19,7 +19,7 @@ export function LogButton() {
 
   return (
     <Pressable
-      onPress={() => router.push('/log-catch')}
+      onPress={() => router.push('/log-catch?mode=camera')}
       style={[styles.button, { bottom: bottomOffset }]}
       className="active:opacity-80"
     >
