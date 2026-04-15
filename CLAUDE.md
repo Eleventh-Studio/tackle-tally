@@ -10,10 +10,10 @@ Tackle Tally is a privacy-first fishing catch-log app for Australian recreationa
 
 ## Current Stage
 
-**Stage 1 — MVP Alpha** (April–May 2026)
-Single-device, fully offline catch-logging tool. No backend, no accounts, no sharing. Test with Josh and ~10 fishing mates via Expo EAS preview builds.
+**Stage 1 — MVP Alpha** (now → 31 May 2026)
+Single-device, fully offline catch-logging tool. No backend, no accounts, no sharing.
 
-**Key upcoming milestone:** AFTA Tackle Show, Gold Coast, 22 Aug 2026 — target for a solid demo build.
+Exit criteria: Josh and ~10 fishing mates have used it for at least one week of real fishing with no crashes.
 
 ## Constitution
 
@@ -75,9 +75,71 @@ Feature branches: `001-feature-name`, `002-feature-name`, etc.
 - **Images**: stored with full EXIF intact locally; EXIF stripped server-side before any sharing (Stage 2+)
 - **No backdating**: data integrity depends on verifiable metadata
 
-## Product Roadmap Reference
+## Product Roadmap
 
-- Stage 1 (Apr–May 2026): One-handed logging, local DB, EXIF/sensor capture
-- Stage 2 (Jun–Jul 2026): Private Crews, Supabase sync, multi-device
-- Stage 3 (Aug 2026): Public launch, AFTA show, influencer partnerships
-- Stage 4 (2027+): AI forecasting, brand/gear integration
+### Stage 1 — MVP Alpha (now → 31 May 2026)
+**Goal:** Real-world validated catch logging on a single device, fully offline.
+
+| Milestone | Date |
+|---|---|
+| EAS dev build — maps working, distributed to Xi + Josh | 30 Apr 2026 |
+| EAS preview build — distributed to fishing group (~10 mates) | 15 May 2026 |
+| Stage 1 complete — 1 week crash-free daily use by group | 31 May 2026 |
+
+Scope:
+- One-handed photo-first catch logging (✅ done)
+- GPS capture at log time (✅ done)
+- Species picker with custom entry (✅ done)
+- Sessions (✅ done)
+- Map view (✅ done)
+- Fix TypeScript errors in useStats + CatchDetailScreen
+- Barometer display in catch record
+- EXIF GPS extraction from gallery photos
+- Photo file persistence (copy to app documents dir on save)
+- Session detail screen
+- Google Maps API key for Android EAS builds
+- Settings screen (unit preferences: cm/in, kg/lb)
+
+### Stage 2 — Connected Beta (1 Jun → 18 Jul 2026)
+**Goal:** Accounts, cloud sync, and Private Crews — Xi and Josh can see each other's catches in a shared crew.
+
+| Milestone | Date |
+|---|---|
+| Supabase project live, auth (email + Apple Sign-In) working | 15 Jun 2026 |
+| Catch sync end-to-end (local → cloud, cloud → local) | 1 Jul 2026 |
+| Private Crews MVP — invite, shared catch feed | 18 Jul 2026 |
+
+Scope:
+- Supabase project setup + schema migration
+- Auth: email/password + Apple Sign-In (required for iOS App Store)
+- Catch sync engine (offline-first, conflict resolution)
+- Photo upload to Supabase Storage (EXIF stripped)
+- Species global database (see ADR-008)
+- Private Crews: invite by link, shared catch feed, no social feed
+- Multi-device: same account on phone + tablet
+
+### Stage 3 — AFTA Demo Build (19 Jul → 8 Aug 2026)
+**Goal:** Polished, stable, demo-ready build for the AFTA Tackle Show. 30-minute unassisted demo with no issues.
+
+| Milestone | Date |
+|---|---|
+| Feature freeze | 1 Aug 2026 |
+| Final demo build (EAS + TestFlight) submitted | 8 Aug 2026 |
+| **AFTA Tackle Show — Gold Coast** | **22 Aug 2026** |
+
+Scope:
+- AI species identification (photo → species suggestion)
+- Catch analytics: personal stats, heatmaps, best conditions
+- Performance pass: launch time, scroll, image loading
+- Onboarding flow for new users at the show
+- App Store submission (iOS)
+
+### Stage 4 — Public Launch & Growth (Sep 2026 →)
+**Goal:** App Store public listing, recurring revenue, brand partnerships.
+
+Scope (to be specced):
+- Public App Store listing (iOS + Android)
+- AI fishing forecast (conditions → predicted species + locations)
+- Tide, moon phase, weather enrichment
+- Gear tracking and brand integration
+- Influencer partnership tools
