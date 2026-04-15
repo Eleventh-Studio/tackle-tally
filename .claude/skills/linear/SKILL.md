@@ -83,6 +83,12 @@ LABEL_STAGE_4   = bb12ad67-4dfc-476a-9e88-c0e0a830d12d
 LABEL_BUG       = 6065df48-3d1c-429c-92a2-b653e01e52bf
 LABEL_FEATURE   = 81b0bac5-3239-463c-ae4a-05a2d5cabe43
 LABEL_IMPROVE   = b803f177-7873-4f9c-ad0f-7794529a1975
+
+# Projects (one per stage)
+PROJECT_STAGE_1 = ef47a83e-7fc3-46df-9d01-8cc7af0f62b7   # Stage 1 — MVP Alpha (ends 31 May 2026)
+PROJECT_STAGE_2 = d22b2023-ebd5-452b-a950-6136c87f7091   # Stage 2 — Connected Beta (ends 18 Jul 2026)
+PROJECT_STAGE_3 = 6595c7a1-f639-4a63-bf0f-c3abe27787fa   # Stage 3 — AFTA Demo Build (ends 22 Aug 2026)
+PROJECT_STAGE_4 = 6305fe41-2ae8-41c6-a06d-7cd4ba005965   # Stage 4 — Public Launch & Growth
 ```
 
 ### If IDs are missing or stale
