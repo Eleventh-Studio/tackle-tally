@@ -11,7 +11,6 @@ export const SPECIES_LIST = [
   'Bream (Pikey)',
   'Bream (Tarwhine)',
   'Bream (Yellowfin)',
-  'Cobia',
   'Dart',
   'Dart (Swallowtail)',
   'Estuary Cod',

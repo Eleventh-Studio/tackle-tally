@@ -15,7 +15,7 @@ export function SpeciesSelect({ value, onChange }: SpeciesSelectProps) {
   const [search, setSearch] = useState('');
 
   const trimmed = search.trim();
-  const filtered = [...SPECIES_LIST]
+  const filtered = [...new Set(SPECIES_LIST)]
     .filter((s) => s.toLowerCase().includes(trimmed.toLowerCase()))
     .sort((a, b) => a.localeCompare(b));
   const showCustom =
