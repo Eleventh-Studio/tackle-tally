@@ -43,34 +43,73 @@ curl -s -X POST https://api.linear.app/graphql \
   -d '{"query": "QUERY_HERE"}'
 ```
 
-Parse responses with `jq`. If `jq` is not installed, use `python3 -c "import sys,json; ..."` as fallback.
+Parse responses with `jq`. If `jq` is not installed, use Python as fallback.
 
----
+**Always use GraphQL variables for mutations** — never interpolate strings into
+the query body. Descriptions contain backticks, quotes and newlines that break
+inline GraphQL strings. The correct pattern in Python:
 
-## Operations
-
-### 1. Resolve workspace context
-
-Always run this first to get the team ID and workflow state IDs needed for mutations:
-
-```graphql
-{
-  viewer { id name email }
-  teams { nodes { id name key } }
+```python
+body = {
+    "query": "mutation CreateIssue($input: IssueCreateInput!) { issueCreate(input: $input) { success issue { identifier title url } } }",
+    "variables": {"input": {"teamId": TEAM_ID, "title": "...", "description": "...", ...}}
 }
 ```
 
-Then get workflow states for the relevant team:
+---
+
+## Workspace IDs
+
+These are the known IDs for the Tackle Tally Linear workspace. Use them directly
+without querying unless they appear stale (API returns "not found" errors).
+
+```
+TEAM_ID = a800a9c6-b6c4-4c9a-afde-96c56933d0d0   # team key: TAC
+
+# Workflow states
+BACKLOG     = 00219757-0ab9-409e-823d-09fcb87976dc
+TODO        = d111e04d-89a5-4b4d-be5c-c0b4fc83fe55
+IN_PROGRESS = 3f57aa61-1f53-42bc-be08-e7d1cc7d8431
+IN_REVIEW   = 746638aa-24f9-40f4-a99c-4516e71e8342
+DONE        = be4d6a83-8adc-4ab1-b861-7bebd90f7bcc
+CANCELLED   = 2f553115-f3a9-44d6-ba79-a27f87d293c0
+DUPLICATE   = 85941a87-44d0-484b-be02-5e99e2d16ffd
+
+# Labels
+LABEL_STAGE_1   = f4c158d4-c29a-4e99-9b58-e3d0682b3746
+LABEL_STAGE_2   = 6dd49084-715e-4efe-be6a-5a9e2feadd00
+LABEL_STAGE_3   = 4a68e26c-ed5d-4fd5-b405-bc7e5e096f8e
+LABEL_STAGE_4   = bb12ad67-4dfc-476a-9e88-c0e0a830d12d
+LABEL_BUG       = 6065df48-3d1c-429c-92a2-b653e01e52bf
+LABEL_FEATURE   = 81b0bac5-3239-463c-ae4a-05a2d5cabe43
+LABEL_IMPROVE   = b803f177-7873-4f9c-ad0f-7794529a1975
+```
+
+### If IDs are missing or stale
+
+If the above IDs return "not found" errors, re-resolve them with these queries
+and update this file with the new values:
 
 ```graphql
+# Re-resolve team ID
+{ teams { nodes { id name key } } }
+
+# Re-resolve workflow states (substitute actual TEAM_ID)
 {
   workflowStates(filter: { team: { id: { eq: "TEAM_ID" } } }) {
     nodes { id name type }
   }
 }
+
+# Re-resolve labels
+{ issueLabels { nodes { id name color } } }
 ```
 
-Map state names to IDs. Common states: Todo, In Progress, In Review, Done, Cancelled.
+---
+
+## Operations
+
+### 1. Resolve workspace context (only if IDs are stale)
 
 ---
 
