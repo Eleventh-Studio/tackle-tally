@@ -14,9 +14,13 @@ export function SpeciesSelect({ value, onChange }: SpeciesSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
 
-  const filtered = SPECIES_LIST.filter((s) =>
-    s.toLowerCase().includes(search.toLowerCase())
-  );
+  const trimmed = search.trim();
+  const filtered = [...SPECIES_LIST]
+    .filter((s) => s.toLowerCase().includes(trimmed.toLowerCase()))
+    .sort((a, b) => a.localeCompare(b));
+  const showCustom =
+    trimmed.length > 0 &&
+    !SPECIES_LIST.some((s) => s.toLowerCase() === trimmed.toLowerCase());
 
   const handleSelect = (species: string) => {
     onChange(species);
@@ -51,6 +55,19 @@ export function SpeciesSelect({ value, onChange }: SpeciesSelectProps) {
           data={filtered}
           keyExtractor={(item) => item}
           keyboardShouldPersistTaps="handled"
+          ListHeaderComponent={
+            showCustom ? (
+              <Pressable
+                onPress={() => handleSelect(trimmed)}
+                className="px-6 py-4 border-b border-border active:bg-surface-raised flex-row items-center gap-x-3"
+              >
+                <Text className="text-accent font-bold text-base">+</Text>
+                <Text className="text-accent font-semibold text-base flex-1" numberOfLines={1}>
+                  Use "{trimmed}"
+                </Text>
+              </Pressable>
+            ) : null
+          }
           renderItem={({ item }) => (
             <Pressable
               onPress={() => handleSelect(item)}
