@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import * as catchRepo from '@/db/repositories/catches';
 import { useCatchStore } from '@/stores/useCatchStore';
 import { generateId } from '@/utils/ids';
+import { persistCatchPhoto, deleteCatchPhoto } from '@/utils/photoStorage';
 import type { Catch, CreateCatchInput } from '@/types';
 
 /**
@@ -24,9 +25,15 @@ export function useCatches() {
 
   const createCatch = useCallback(
     async (input: Omit<CreateCatchInput, 'id' | 'created_at'>): Promise<Catch> => {
+      const id = generateId();
+      // ImagePicker drops photos in the OS cache directory; iOS may evict them
+      // under storage pressure. Copy into the app's documents dir before the DB
+      // insert so the stored photo_uri is one we control.
+      const persistentPhotoUri = persistCatchPhoto(id, input.photo_uri);
       const record: CreateCatchInput = {
         ...input,
-        id: generateId(),
+        photo_uri: persistentPhotoUri,
+        id,
         created_at: new Date().toISOString(),
       };
       const created = await catchRepo.createCatch(record);
@@ -38,8 +45,10 @@ export function useCatches() {
 
   const deleteCatch = useCallback(
     async (id: string) => {
+      const existing = await catchRepo.getCatchById(id);
       await catchRepo.deleteCatch(id);
       removeCatch(id);
+      if (existing?.photo_uri) deleteCatchPhoto(existing.photo_uri);
     },
     [removeCatch]
   );
