@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader, NumberInput, SectionHeader } from '@/components/ds';
 import { SpeciesSelect } from '@/components/catch/SpeciesSelect';
 import { GearSection, type GearValues } from '@/components/catch/GearSection';
+import { SessionPickerSheet } from '@/components/session/SessionPickerSheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import { useCamera } from '@/hooks/useCamera';
@@ -37,11 +38,14 @@ export function LogCatchScreen() {
   const { createCatch } = useCatches();
   const { sessions, activeSession } = useSessions();
 
-  // An explicit session_id in the URL (e.g. tapping "Add Catch to Session" from
-  // SessionDetailScreen) takes precedence over the global activeSession — the
-  // user has named the session they want this catch to land in.
-  const targetSession =
-    (sessionIdParam && sessions.find((s) => s.id === sessionIdParam)) || activeSession;
+  // Initial session pick: explicit URL param wins (e.g. "+ Add Catch to Session"
+  // from SessionDetailScreen), then the global active session, else null.
+  // The user can change it via the picker below.
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
+    () => sessionIdParam ?? activeSession?.id ?? null
+  );
+  const [showSessionPicker, setShowSessionPicker] = useState(false);
+  const selectedSession = sessions.find((s) => s.id === selectedSessionId) ?? null;
 
   const [phase, setPhase] = useState<Phase>('source');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
@@ -153,7 +157,7 @@ export function LogCatchScreen() {
         weather_wind_dir_deg: null,
         moon_phase: null,
         tide_height_m: null,
-        session_id: targetSession?.id ?? null,
+        session_id: selectedSessionId,
         notes: null,
         ...gear,
       });
@@ -259,14 +263,23 @@ export function LogCatchScreen() {
             </View>
           </View>
 
-          {/* Session indicator — shows whichever session this catch will land in */}
-          {targetSession && (
-            <View className="bg-accent/10 border border-accent/30 rounded-card px-4 py-3">
-              <Text className="text-accent text-sm font-semibold">
-                Adding to: {targetSession.name}
-              </Text>
-            </View>
-          )}
+          {/* Session picker — tap to change which session this catch lands in */}
+          <Pressable
+            onPress={() => setShowSessionPicker(true)}
+            className={`rounded-card px-4 py-3 active:opacity-70 ${
+              selectedSession
+                ? 'bg-accent/10 border border-accent/30'
+                : 'bg-surface border border-border'
+            }`}
+          >
+            <Text
+              className={`text-sm font-semibold ${
+                selectedSession ? 'text-accent' : 'text-muted'
+              }`}
+            >
+              {selectedSession ? `Adding to: ${selectedSession.name}` : 'No session — tap to add'}
+            </Text>
+          </Pressable>
 
           {/* Size */}
           <View>
@@ -311,6 +324,14 @@ export function LogCatchScreen() {
         </Pressable>
       </View>
     </KeyboardAvoidingView>
+
+    <SessionPickerSheet
+      visible={showSessionPicker}
+      onClose={() => setShowSessionPicker(false)}
+      sessions={sessions}
+      selectedId={selectedSessionId}
+      onSelect={setSelectedSessionId}
+    />
     </SafeAreaView>
   );
 }
