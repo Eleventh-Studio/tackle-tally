@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
 import type { Catch } from '@/types';
-import { formatSize, formatDateTime } from '@/utils/formatters';
+import { formatDateTime } from '@/utils/formatters';
+import { formatSize } from '@/utils/units';
 import { getCatchTimestamp } from '@/utils/timestamps';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 
 interface CatchCardProps {
   catch_: Catch;
@@ -11,6 +13,7 @@ interface CatchCardProps {
 
 export function CatchCard({ catch_: c, onPress }: CatchCardProps) {
   const needsId = !c.species;
+  const { lengthUnit, weightUnit } = useSettingsStore();
 
   return (
     <Pressable
@@ -36,7 +39,7 @@ export function CatchCard({ catch_: c, onPress }: CatchCardProps) {
           )}
         </View>
         {(c.length_cm || c.weight_g) && (
-          <Text className="text-muted text-sm">{formatSize(c.length_cm, c.weight_g)}</Text>
+          <Text className="text-muted text-sm">{formatSize(c.length_cm, c.weight_g, lengthUnit, weightUnit)}</Text>
         )}
         <Text className="text-subtle text-xs">{formatDateTime(getCatchTimestamp(c))}</Text>
       </View>

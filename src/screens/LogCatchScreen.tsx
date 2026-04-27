@@ -22,6 +22,8 @@ import { useCamera } from '@/hooks/useCamera';
 import { useBarometer } from '@/hooks/sensors/useBarometer';
 import { useCatches } from '@/hooks/useCatches';
 import { useSessions } from '@/hooks/useSessions';
+import { useSettingsStore } from '@/stores/useSettingsStore';
+import { lengthToCm, weightToG } from '@/utils/units';
 import { colors } from '@/theme';
 
 type Phase = 'source' | 'confirm';
@@ -37,6 +39,7 @@ export function LogCatchScreen() {
   const { pressureHpa } = useBarometer();
   const { createCatch } = useCatches();
   const { sessions, activeSession } = useSessions();
+  const { lengthUnit, weightUnit } = useSettingsStore();
 
   // Initial session pick: explicit URL param wins (e.g. "+ Add Catch to Session"
   // from SessionDetailScreen), then the global active session, else null.
@@ -144,8 +147,8 @@ export function LogCatchScreen() {
         photo_uri: photoUri,
         taken_at: exifTimestamp,
         species: species ?? null,
-        length_cm: length ? parseFloat(length) : null,
-        weight_g: weight ? parseFloat(weight) * 1000 : null,
+        length_cm: length ? lengthToCm(parseFloat(length), lengthUnit) : null,
+        weight_g: weight ? weightToG(parseFloat(weight), weightUnit) : null,
         device_lat: deviceLat,
         device_lng: deviceLng,
         exif_lat: exifLat,
@@ -289,13 +292,13 @@ export function LogCatchScreen() {
                 label="Length"
                 value={length}
                 onChangeText={setLength}
-                unit="cm"
+                unit={lengthUnit}
               />
               <NumberInput
                 label="Weight"
                 value={weight}
                 onChangeText={setWeight}
-                unit="kg"
+                unit={weightUnit}
               />
             </View>
           </View>

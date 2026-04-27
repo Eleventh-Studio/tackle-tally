@@ -24,6 +24,14 @@ import { colors } from '@/theme';
 import { formatDateTime } from '@/utils/formatters';
 import { getCatchCoordinates } from '@/utils/coordinates';
 import { getCatchTimestamp, isRetrospective } from '@/utils/timestamps';
+import { useSettingsStore } from '@/stores/useSettingsStore';
+import { lengthFromCm, lengthToCm, weightFromG, weightToG } from '@/utils/units';
+
+// Format a number for an editable input — round, then strip trailing zeros so
+// the user doesn't see "42.0" when they originally typed "42".
+function formatInputNumber(value: number, decimals: number): string {
+  return String(parseFloat(value.toFixed(decimals)));
+}
 
 export function CatchDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -31,13 +39,20 @@ export function CatchDetailScreen() {
   const insets = useSafeAreaInsets();
   const { catches, editCatch, deleteCatch } = useCatches();
   const { latitude: currentLat, longitude: currentLng } = useLocation();
+  const { lengthUnit, weightUnit } = useSettingsStore();
 
   const catch_ = catches.find((c) => c.id === id);
 
   const [species, setSpecies] = useState<string | null>(catch_?.species ?? null);
-  const [length, setLength] = useState(catch_?.length_cm != null ? String(catch_.length_cm) : '');
+  const [length, setLength] = useState(
+    catch_?.length_cm != null
+      ? formatInputNumber(lengthFromCm(catch_.length_cm, lengthUnit), lengthUnit === 'cm' ? 0 : 1)
+      : ''
+  );
   const [weight, setWeight] = useState(
-    catch_?.weight_g != null ? String(catch_.weight_g / 1000) : ''
+    catch_?.weight_g != null
+      ? formatInputNumber(weightFromG(catch_.weight_g, weightUnit), 1)
+      : ''
   );
   const [notes, setNotes] = useState(catch_?.notes ?? '');
   const [gear, setGear] = useState<GearValues>({
@@ -65,8 +80,8 @@ export function CatchDetailScreen() {
     try {
       await editCatch(id, {
         species: species ?? null,
-        length_cm: length ? parseFloat(length) : null,
-        weight_g: weight ? parseFloat(weight) * 1000 : null,
+        length_cm: length ? lengthToCm(parseFloat(length), lengthUnit) : null,
+        weight_g: weight ? weightToG(parseFloat(weight), weightUnit) : null,
         notes: notes.trim() || null,
         ...gear,
       });
@@ -250,8 +265,8 @@ export function CatchDetailScreen() {
           <View>
             <SectionHeader title="Size" />
             <View className="flex-row gap-x-3">
-              <NumberInput label="Length" value={length} onChangeText={setLength} unit="cm" />
-              <NumberInput label="Weight" value={weight} onChangeText={setWeight} unit="kg" />
+              <NumberInput label="Length" value={length} onChangeText={setLength} unit={lengthUnit} />
+              <NumberInput label="Weight" value={weight} onChangeText={setWeight} unit={weightUnit} />
             </View>
           </View>
 

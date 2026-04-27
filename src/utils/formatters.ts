@@ -46,14 +46,6 @@ export function formatMonthYear(iso: string): string {
   });
 }
 
-/** e.g. "42 cm" or "1.2 kg" */
-export function formatSize(lengthCm?: number | null, weightG?: number | null): string {
-  const parts: string[] = [];
-  if (lengthCm) parts.push(`${lengthCm} cm`);
-  if (weightG) parts.push(`${(weightG / 1000).toFixed(1)} kg`);
-  return parts.join(' · ');
-}
-
 /** e.g. "1013 hPa" */
 export function formatPressure(hpa?: number | null): string {
   if (!hpa) return '—';

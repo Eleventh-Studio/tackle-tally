@@ -39,6 +39,7 @@ export default function RootLayout() {
           <Stack.Screen name="log-catch" options={{ presentation: 'modal' }} />
           <Stack.Screen name="catches/[id]" />
           <Stack.Screen name="sessions/[id]" />
+          <Stack.Screen name="settings" />
           <Stack.Screen name="+not-found" />
         </Stack>
       </SafeAreaProvider>

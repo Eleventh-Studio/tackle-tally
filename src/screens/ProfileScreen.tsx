@@ -1,23 +1,43 @@
 import React, { useEffect } from 'react';
-import { ScrollView, View, Text, Image } from 'react-native';
+import { ScrollView, View, Text, Image, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Settings } from 'lucide-react-native';
 import { StatCard, SectionHeader } from '@/components/ds';
 import { useStats } from '@/hooks/useStats';
 import { useCatches } from '@/hooks/useCatches';
+import { useSettingsStore } from '@/stores/useSettingsStore';
+import { formatSize, lengthFromCm } from '@/utils/units';
+import { colors } from '@/theme';
 
 export function ProfileScreen() {
+  const router = useRouter();
   const { loadCatches } = useCatches();
   const stats = useStats();
+  const { lengthUnit, weightUnit } = useSettingsStore();
 
   useEffect(() => { loadCatches(); }, []);
 
   const maxCount = Math.max(...stats.speciesBreakdown.map((s) => s.count), 1);
+
+  const biggestLengthDisplay = stats.biggestCatch?.length_cm
+    ? `${Math.round(lengthFromCm(stats.biggestCatch.length_cm, lengthUnit))}${lengthUnit}`
+    : '—';
 
   return (
     <ScrollView
       className="flex-1 bg-background"
       contentContainerClassName="px-4 pt-4 pb-8 gap-y-6"
     >
-      <Text className="text-2xl font-black text-foreground uppercase tracking-widest">Profile</Text>
+      <View className="flex-row items-center justify-between">
+        <Text className="text-2xl font-black text-foreground uppercase tracking-widest">Profile</Text>
+        <Pressable
+          onPress={() => router.push('/settings')}
+          hitSlop={8}
+          className="active:opacity-60"
+        >
+          <Settings size={22} color={colors.foreground} strokeWidth={2} />
+        </Pressable>
+      </View>
 
       {/* Featured catch */}
       {stats.biggestCatch && (
@@ -34,8 +54,15 @@ export function ProfileScreen() {
             <Text className="text-foreground font-black text-xl">
               {stats.biggestCatch.species ?? 'Unknown species'}
             </Text>
-            {stats.biggestCatch.length_cm && (
-              <Text className="text-muted">{stats.biggestCatch.length_cm} cm</Text>
+            {(stats.biggestCatch.length_cm || stats.biggestCatch.weight_g) && (
+              <Text className="text-muted">
+                {formatSize(
+                  stats.biggestCatch.length_cm,
+                  stats.biggestCatch.weight_g,
+                  lengthUnit,
+                  weightUnit
+                )}
+              </Text>
             )}
           </View>
         </View>
@@ -51,10 +78,7 @@ export function ProfileScreen() {
           </View>
           <View className="flex-row gap-x-3 w-full">
             <StatCard value={stats.totalSessions} label="Sessions" />
-            <StatCard
-              value={stats.biggestCatch?.length_cm ? `${stats.biggestCatch.length_cm}cm` : '—'}
-              label="Biggest"
-            />
+            <StatCard value={biggestLengthDisplay} label="Biggest" />
           </View>
         </View>
       </View>
