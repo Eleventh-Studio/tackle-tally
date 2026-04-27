@@ -206,6 +206,22 @@ export function CatchDetailScreen() {
           </View>
         </View>
 
+        {/* Environment — read-only sensor values captured at log time */}
+        {catch_.barometric_pressure_hpa != null && (
+          <View className="px-4 pt-5">
+            <SectionHeader title="Environment" />
+            <View className="bg-surface border border-border rounded-card px-4 py-3 flex-row items-baseline justify-between">
+              <Text className="text-muted text-sm font-semibold uppercase tracking-wider">
+                Pressure
+              </Text>
+              <Text className="text-foreground text-2xl font-black">
+                {Math.round(catch_.barometric_pressure_hpa)}
+                <Text className="text-muted text-sm font-semibold"> hPa</Text>
+              </Text>
+            </View>
+          </View>
+        )}
+
         {/* Editable fields */}
         <View className="px-4 pt-5 gap-y-6">
           <View>
