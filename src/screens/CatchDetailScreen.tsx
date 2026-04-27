@@ -23,6 +23,7 @@ import { useLocation } from '@/hooks/sensors/useLocation';
 import { colors } from '@/theme';
 import { formatDateTime } from '@/utils/formatters';
 import { getCatchCoordinates } from '@/utils/coordinates';
+import { getCatchTimestamp, isRetrospective } from '@/utils/timestamps';
 
 export function CatchDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -182,8 +183,13 @@ export function CatchDetailScreen() {
         {/* Read-only metadata row */}
         <View className="px-4 py-3 border-b border-border gap-y-2 mt-3">
           <Text className="text-xs text-muted font-semibold uppercase tracking-widest">
-            Logged {formatDateTime(catch_.created_at)}
+            {formatDateTime(getCatchTimestamp(catch_))}
           </Text>
+          {isRetrospective(catch_) && (
+            <Text className="text-[10px] text-subtle font-semibold uppercase tracking-widest">
+              Logged {formatDateTime(catch_.created_at)}
+            </Text>
+          )}
           <View className="flex-row gap-x-2 flex-wrap">
             {coords && (
               <View className="bg-surface border border-border rounded-full px-3 py-1">
@@ -294,7 +300,7 @@ export function CatchDetailScreen() {
             <Marker
               coordinate={coords}
               title={catch_.species ?? 'Catch'}
-              description={formatDateTime(catch_.created_at)}
+              description={formatDateTime(getCatchTimestamp(catch_))}
             />
           </MapView>
         </SafeAreaView>

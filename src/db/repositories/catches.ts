@@ -1,9 +1,14 @@
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db } from '../client';
 import { catches, type CatchRow, type NewCatch } from '../schema';
 
+// Sort key: when the catch actually happened (EXIF DateTimeOriginal if present,
+// else log time). Keeps a retrospective gallery upload in its real chronological
+// place instead of jumping to the top of the list.
+const catchTimeDesc = sql`COALESCE(${catches.taken_at}, ${catches.created_at}) DESC`;
+
 export async function getAllCatches(): Promise<CatchRow[]> {
-  return db.select().from(catches).orderBy(desc(catches.created_at));
+  return db.select().from(catches).orderBy(catchTimeDesc);
 }
 
 export async function getCatchById(id: string): Promise<CatchRow | undefined> {
@@ -16,11 +21,11 @@ export async function getCatchesBySession(sessionId: string): Promise<CatchRow[]
     .select()
     .from(catches)
     .where(eq(catches.session_id, sessionId))
-    .orderBy(desc(catches.created_at));
+    .orderBy(catchTimeDesc);
 }
 
 export async function getRecentCatches(limit = 20): Promise<CatchRow[]> {
-  return db.select().from(catches).orderBy(desc(catches.created_at)).limit(limit);
+  return db.select().from(catches).orderBy(catchTimeDesc).limit(limit);
 }
 
 export async function createCatch(data: NewCatch): Promise<CatchRow> {

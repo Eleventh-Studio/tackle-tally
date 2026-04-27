@@ -38,6 +38,7 @@ export function LogCatchScreen() {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [exifLat, setExifLat] = useState<number | null>(null);
   const [exifLng, setExifLng] = useState<number | null>(null);
+  const [exifTimestamp, setExifTimestamp] = useState<string | null>(null);
   const [deviceLat, setDeviceLat] = useState<number | null>(null);
   const [deviceLng, setDeviceLng] = useState<number | null>(null);
 
@@ -63,10 +64,16 @@ export function LogCatchScreen() {
   });
   const [saving, setSaving] = useState(false);
 
-  const afterPhoto = (uri: string, lat: number | null, lng: number | null) => {
+  const afterPhoto = (
+    uri: string,
+    lat: number | null,
+    lng: number | null,
+    timestamp: string | null
+  ) => {
     setPhotoUri(uri);
     setExifLat(lat);
     setExifLng(lng);
+    setExifTimestamp(timestamp);
     setPhase('confirm');
   };
 
@@ -90,12 +97,15 @@ export function LogCatchScreen() {
     // Fire GPS capture and camera simultaneously — camera takes a few seconds
     // while the user frames the shot, giving GPS time to resolve.
     const [result] = await Promise.all([launchCamera(), captureLocation()]);
-    if (result) afterPhoto(result.uri, result.exifLat, result.exifLng);
+    if (result) afterPhoto(result.uri, result.exifLat, result.exifLng, result.exifTimestamp);
   };
 
   const handleLibrary = async () => {
-    const [result] = await Promise.all([launchLibrary(), captureLocation()]);
-    if (result) afterPhoto(result.uri, result.exifLat, result.exifLng);
+    // Gallery uploads are usually retrospective — device GPS at upload time
+    // would be misleading ("where I am now" ≠ "where I caught it"). Skip it
+    // and rely on the photo's EXIF GPS instead.
+    const result = await launchLibrary();
+    if (result) afterPhoto(result.uri, result.exifLat, result.exifLng, result.exifTimestamp);
   };
 
   const handleAiIdentify = () => {
@@ -110,8 +120,16 @@ export function LogCatchScreen() {
     if (!photoUri) return;
     setSaving(true);
     try {
+      // Live barometer reading only makes sense when the photo is fresh.
+      // For an EXIF timestamp older than ~2 min the pressure now isn't the
+      // pressure at catch time — better to store nothing than wrong data.
+      const isRetrospective =
+        exifTimestamp != null &&
+        Date.now() - new Date(exifTimestamp).getTime() > 2 * 60 * 1000;
+
       await createCatch({
         photo_uri: photoUri,
+        taken_at: exifTimestamp,
         species: species ?? null,
         length_cm: length ? parseFloat(length) : null,
         weight_g: weight ? parseFloat(weight) * 1000 : null,
@@ -120,7 +138,7 @@ export function LogCatchScreen() {
         exif_lat: exifLat,
         exif_lng: exifLng,
         location_name: null,
-        barometric_pressure_hpa: pressureHpa,
+        barometric_pressure_hpa: isRetrospective ? null : pressureHpa,
         weather_temp_c: null,
         weather_wind_kph: null,
         weather_wind_dir_deg: null,

@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Image, Pressable, Dimensions, RefreshControl } 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCatches } from '@/hooks/useCatches';
 import { formatMonthYear } from '@/utils/formatters';
+import { getCatchTimestamp } from '@/utils/timestamps';
 import { colors } from '@/theme';
 import type { Catch } from '@/types';
 
@@ -25,7 +26,7 @@ export function GalleryScreen() {
 
   // Group by month
   const grouped = catches.reduce<Record<string, Catch[]>>((acc, c) => {
-    const key = formatMonthYear(c.created_at);
+    const key = formatMonthYear(getCatchTimestamp(c));
     if (!acc[key]) acc[key] = [];
     acc[key].push(c);
     return acc;

@@ -3,6 +3,7 @@ import { sqliteTable, text, real, integer } from 'drizzle-orm/sqlite-core';
 export const catches = sqliteTable('catches', {
   id: text('id').primaryKey().notNull(),
   created_at: text('created_at').notNull(), // ISO timestamp — system-generated, never user-editable
+  taken_at: text('taken_at'),                // ISO timestamp from photo EXIF (DateTimeOriginal); null if EXIF missing
 
   // Media
   photo_uri: text('photo_uri').notNull(),
