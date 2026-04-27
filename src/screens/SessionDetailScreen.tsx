@@ -90,7 +90,9 @@ export function SessionDetailScreen() {
 
         {/* Add catch button */}
         <Button
-          onPress={() => router.push('/log-catch')}
+          onPress={() =>
+            router.push({ pathname: '/log-catch', params: { session_id: session.id } })
+          }
           label="+ Add Catch to Session"
           variant="secondary"
           fullWidth

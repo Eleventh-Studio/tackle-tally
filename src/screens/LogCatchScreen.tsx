@@ -27,12 +27,21 @@ type Phase = 'source' | 'confirm';
 
 export function LogCatchScreen() {
   const router = useRouter();
-  const { mode } = useLocalSearchParams<{ mode?: string }>();
+  const { mode, session_id: sessionIdParam } = useLocalSearchParams<{
+    mode?: string;
+    session_id?: string;
+  }>();
   const insets = useSafeAreaInsets();
   const { launchCamera, launchLibrary } = useCamera();
   const { pressureHpa } = useBarometer();
   const { createCatch } = useCatches();
-  const { activeSession } = useSessions();
+  const { sessions, activeSession } = useSessions();
+
+  // An explicit session_id in the URL (e.g. tapping "Add Catch to Session" from
+  // SessionDetailScreen) takes precedence over the global activeSession — the
+  // user has named the session they want this catch to land in.
+  const targetSession =
+    (sessionIdParam && sessions.find((s) => s.id === sessionIdParam)) || activeSession;
 
   const [phase, setPhase] = useState<Phase>('source');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
@@ -144,7 +153,7 @@ export function LogCatchScreen() {
         weather_wind_dir_deg: null,
         moon_phase: null,
         tide_height_m: null,
-        session_id: activeSession?.id ?? null,
+        session_id: targetSession?.id ?? null,
         notes: null,
         ...gear,
       });
@@ -250,11 +259,11 @@ export function LogCatchScreen() {
             </View>
           </View>
 
-          {/* Active session indicator */}
-          {activeSession && (
+          {/* Session indicator — shows whichever session this catch will land in */}
+          {targetSession && (
             <View className="bg-accent/10 border border-accent/30 rounded-card px-4 py-3">
               <Text className="text-accent text-sm font-semibold">
-                Adding to: {activeSession.name}
+                Adding to: {targetSession.name}
               </Text>
             </View>
           )}

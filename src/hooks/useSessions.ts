@@ -42,9 +42,13 @@ export function useSessions() {
       };
       const created = await sessionRepo.createSession(record);
       addSession(created);
+      // A freshly created session is, by definition, active. Without this,
+      // the next catch logged would fall back to the previous activeSession
+      // (or null) and silently miss its session association.
+      setActiveSession(created);
       return created;
     },
-    [addSession]
+    [addSession, setActiveSession]
   );
 
   const endSession = useCallback(
