@@ -62,7 +62,8 @@
           "photosPermission": "Allow Tackle Tally to access your photo library.",
           "savePhotosPermission": "Allow Tackle Tally to save catch photos to your library."
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ],
     "extra": {
       "router": {},

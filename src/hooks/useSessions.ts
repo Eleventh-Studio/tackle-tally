@@ -32,20 +32,25 @@ export function useSessions() {
   }, [setSessions, setActiveSession, setLoading]);
 
   const createSession = useCallback(
-    async (name: string): Promise<Session> => {
+    async (name: string, startedAt: Date = new Date()): Promise<Session> => {
       const now = new Date().toISOString();
+      const startedAtIso = startedAt.toISOString();
+      // A retrospective session (started_at clearly in the past) is created
+      // already-ended at creation time — the user is recording a fishing trip
+      // that happened earlier. A live session (started_at ≈ now) stays open.
+      const isRetrospective = Date.now() - startedAt.getTime() > 60 * 1000;
       const record: CreateSessionInput = {
         id: generateId(),
         created_at: now,
         name,
-        started_at: now,
+        started_at: startedAtIso,
+        ended_at: isRetrospective ? now : null,
       };
       const created = await sessionRepo.createSession(record);
       addSession(created);
-      // A freshly created session is, by definition, active. Without this,
-      // the next catch logged would fall back to the previous activeSession
-      // (or null) and silently miss its session association.
-      setActiveSession(created);
+      // Only a live session becomes the active one. A retrospective session
+      // is already ended, so leave activeSession alone.
+      if (!isRetrospective) setActiveSession(created);
       return created;
     },
     [addSession, setActiveSession]
