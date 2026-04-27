@@ -166,7 +166,7 @@ export function CatchDetailScreen() {
         ) : (
           <View className="mx-4 mt-3 bg-surface border border-border rounded-card px-4 py-3 flex-row items-center justify-between gap-x-3">
             <View className="flex-row items-center gap-x-2">
-              <MapPin size={16} color={colors.muted} strokeWidth={1.8} />
+              <MapPin size={16} color={colors.mutedForeground} strokeWidth={1.8} />
               <Text className="text-muted text-sm">Location unavailable</Text>
             </View>
             {(currentLat != null) && (

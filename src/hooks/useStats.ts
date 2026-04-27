@@ -24,7 +24,11 @@ export function useStats(): AppStats {
     let biggestCatch: Catch | null = null;
 
     for (const c of catches) {
-      speciesMap.set(c.species, (speciesMap.get(c.species) ?? 0) + 1);
+      // Catches with null species are "Needs ID" entries — exclude from the
+      // species breakdown until the user identifies them.
+      if (c.species) {
+        speciesMap.set(c.species, (speciesMap.get(c.species) ?? 0) + 1);
+      }
       if (!biggestCatch || (c.length_cm ?? 0) > (biggestCatch.length_cm ?? 0)) {
         biggestCatch = c;
       }
